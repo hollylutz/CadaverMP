@@ -1,0 +1,22 @@
+#3813
+split_libraries.py -f /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_3813BFasta/Javan_3813B.fna -m /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_3813BFasta/3813_maptest.txt -q /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_3813BFasta/Javan_3813B.qual -o /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_3813BFasta/dmux3813_30June2018/ -H 1000 -p -b hamming_8
+
+#4522
+split_libraries.py -f /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_4522BFasta/Javan_4522B.fna -m /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_4522BFasta/4522_maptest.txt -q /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_4522BFasta/Javan_4522B.qual -o /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_4522BFasta/dmux4522_30June2018/ -H 1000 -p -b hamming_8
+
+#4885
+split_libraries.py -f /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_4885BFasta/Javan_4885B.fna -m /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_4885BFasta/4885_maptest.txt -q /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_4885BFasta/Javan_4885B.qual -o /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_4885BFasta/dmux4885_30June2018/ -H 1000 -p -b hamming_8
+
+
+cat /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_3813BFasta/dmux3813_30June2018/seqs.fna /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_4522BFasta/dmux4522_30June2018/seqs.fna /group/gilbert-lab/Lutz/Cadaver/Raw_data/Javan_4885BFasta/dmux4885_30June2018/seqs.fna > 3813_4522_4885.seqs.fna
+
+
+deblur workflow --seqs-fp /group/gilbert-lab/Lutz/Cadaver/Raw_data/3813_4522_4885.seqs.fna --output-dir /group/gilbert-lab/Lutz/Cadaver/Raw_data/deblur_results_30June2018 -t 150
+
+align_seqs.py -i /group/gilbert-lab/Lutz/Cadaver/Raw_data/deblur_results_30June2018/reference-hit.seqs.fa -t /group/gilbert-lab/Lutz/Cuttlefish/2017_Experiment/gg_13_8_otus/rep_set_aligned/85_otus.pynast.fasta -o /group/gilbert-lab/Lutz/Cadaver/Raw_data/deblur_results_30June2018/aligned
+
+make_phylogeny.py -i /group/gilbert-lab/Lutz/Cadaver/Raw_data/deblur_results_30June2018/aligned/reference-hit.seqs_aligned.fasta -o /group/gilbert-lab/Lutz/Cadaver/Raw_data/deblur_results_30June2018/aligned/rep_phylo.tre
+
+assign_taxonomy.py -i /group/gilbert-lab/Lutz/Cadaver/Raw_data/deblur_results_30June2018/reference-hit.seqs.fa -t /group/gilbert-lab/Lutz/Cuttlefish/2017_Experiment/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o /group/gilbert-lab/Lutz/Cadaver/Raw_data/deblur_results_30June2018/tax_assign_nonaligned/
+
+biom add-metadata --sc-separated taxonomy --observation-header OTUID,taxonomy --observation-metadata-fp /group/gilbert-lab/Lutz/Cadaver/Raw_data/deblur_results_30June2018/tax_assign_nonaligned/reference-hit.seqs_tax_assignments.txt -i /group/gilbert-lab/Lutz/Cadaver/Raw_data/deblur_results_30June2018/reference-hit.biom -o /group/gilbert-lab/Lutz/Cadaver/phyloseq_files_30June2018/3813_4522_4885.biom
